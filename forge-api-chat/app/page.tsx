@@ -60,6 +60,7 @@ export default function Component() {
   const [apiKey, setApiKey] = useState('')
   const [prompt, setPrompt] = useState('')
   const [response, setResponse] = useState<JsonValue | null>(null)
+  const [finalResponse, setFinalResponse] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -69,6 +70,7 @@ export default function Component() {
     setLoading(true)
     setError(null)
     setResponse(null)
+    setFinalResponse(null)
 
     try {
       const initResponse = await fetch(baseUrl, {
@@ -80,7 +82,7 @@ export default function Component() {
         body: JSON.stringify({
           prompt: prompt,
           reasoning_speed: 'medium',
-          track: true,
+          track: true
         }),
       })
 
@@ -112,6 +114,9 @@ export default function Component() {
 
         if (status === 'succeeded') {
           setResponse(pollData)
+          // Extract the final response text
+          const finalResponseText = pollData.result?.choices?.[0]?.message?.content || 'No response content found'
+          setFinalResponse(finalResponseText)
           break
         } else if (status === 'failed' || status === 'cancelled') {
           throw new Error(`Task ${status}`)
@@ -173,9 +178,19 @@ export default function Component() {
                 Error: {error}
               </div>
             )}
+            {finalResponse && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Final Response</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="whitespace-pre-wrap">{finalResponse}</p>
+                </CardContent>
+              </Card>
+            )}
             {response && (
               <div className="mt-4">
-                <h2 className="text-lg font-semibold mb-2">Response:</h2>
+                <h2 className="text-lg font-semibold mb-2">Full Response:</h2>
                 <div className="bg-gray-100 p-4 rounded-lg overflow-auto max-h-[60vh]">
                   <JsonViewer data={response} />
                 </div>
