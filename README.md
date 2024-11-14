@@ -22,7 +22,7 @@ UI for beta endpoint of nousforge - A simple interface to interact with the Nous
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/NousForgeUI.git
+    git clone https://github.com/furlat/NousForgeUI.git
     cd NousForgeUI
     ```
 
